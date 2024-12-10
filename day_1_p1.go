@@ -77,6 +77,10 @@ func computeSimilarities(first_column []int, second_column []int) int {
 	return similarities
 }
 
+// Part 2 - Optimal using map
+
+
+
 func main() {
 	filepath := "inputs/day_1_p1.txt"
 
