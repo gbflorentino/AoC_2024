@@ -44,24 +44,100 @@ func readInput(filepath string) [][]int {
 	return reports
 }
 
+// Part 1
 func verifyReports(reports [][]int) int {
 	var safeReports int = 0
 	
 	for _, report := range reports {
-		lastLevel, lastDiference := 0, 0
+		var reportSafeness int = 0
+		var lastLevel, lastDiference int = 0, 0
+
 		for _, level := range report {
-			diference := absInt(level - lastLevel)
-			}			
+			diference := level - lastLevel
+
+			if (lastLevel == 0) {
+				lastLevel = level
+				continue
+			} else if (diference * lastDiference < 0) {
+				reportSafeness = 0
+				break
+			} else if (diference == 0) {
+				reportSafeness = 0
+				break				
+			} else if (intAbs(diference) < 1 || intAbs(diference) > 3) {
+				reportSafeness = 0
+				break
+			}
+
+			lastLevel, lastDiference = level, diference
+			reportSafeness = 1
+		}
+
+		if (reportSafeness != 0) {
+			safeReports += 1
 		}
 	}
 
-	return 0
+	return safeReports
+} 
+
+// Part 2
+func verifyReport(report []int) (int, []int) {
+	var unsafeLevels []int
+	var reportSafeness int = 0
+	var lastLevel, lastDiference int = 0, 0
+
+	for index, level := range report {
+		diference := level - lastLevel
+
+		if (lastLevel == 0) {
+			lastLevel = level
+			continue
+		} else if (diference * lastDiference < 0) {
+			unsafeLevels = append(unsafeLevels, index-1)
+			reportSafeness += 1
+		} else if (diference == 0) {
+			unsafeLevels = append(unsafeLevels, index)
+			reportSafeness += 1
+		} else if (intAbs(diference) < 1 || intAbs(diference) > 3) {
+			unsafeLevels = append(unsafeLevels, index)
+			reportSafeness += 1
+		}
+
+		lastLevel, lastDiference = level, diference
+	}
+
+	return reportSafeness, unsafeLevels
 }
+
+func verifyReportsDampener(reports [][]int) int {
+	var safeReports int = 0
+
+	for _, report := range reports {
+
+		fmt.Print(report, " ")
+
+		reportSafeness, unsafeLevels := verifyReport(report)
+		
+		if (reportSafeness == 0) {
+			safeReports += 1
+		} else if (reportSafeness <= 2) {
+			removeIndex := unsafeLevels[0]
+			report = append(reportSafeness[:removeIndex], reportSafeness[removeIndex+1:]...)
+			reportSafeness, _ = verifyReport(report)
+			
+		}
+
+		fmt.Println(reportSafeness, unsafeLevels)
+	}
+
+	return safeReports
+} 
 
 func main(){
 	filepath := "inputs/day_2_p1_test"
 
 	reports := readInput(filepath)
-	i := verifyReports(reports)
-	i+=1
+	i := verifyReportsDampener(reports)
+	fmt.Println(i)
 }
